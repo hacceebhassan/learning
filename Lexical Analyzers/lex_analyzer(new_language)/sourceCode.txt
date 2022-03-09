@@ -1,0 +1,37 @@
+﻿include <iostream> 
+using namespace std; 
+voiid main () 
+{
+ integer a=5, b=3;
+ floatt c=8;
+ condition(a<b) 
+ {
+  condition (a<5)
+ {
+     give (a+b)/c;
+  }
+  otherwise
+  {
+     give 0;
+   }
+ }
+ otherwise
+ {
+ give (b*c)-a;
+ }
+ switchh(a)
+ {casse 'A':
+  input>>input;
+  output<<abcd;
+  default: break;
+ }
+ integer weeks = 3, days_in_week = 7;
+  strart_loop (integer i = 1; i <= weeks; ++i) {
+  output << "Week: " << i << endl;
+  start_loop (integer j = 1; j <= days_in_week; ++j) {
+  // conntinue if the day is an odd number
+  condition (j % 2 != 0) {
+  conntinue;
+  }
+  output << "Day:" << j << endl;
+  }}}}

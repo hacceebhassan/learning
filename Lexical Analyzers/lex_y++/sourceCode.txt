@@ -1,0 +1,26 @@
+﻿include <iostream> 
+using namespace std; 
+start () 
+{
+ numbers has = 3;
+ numbers bes = 8
+ loop (i=0, i,<8, i++)
+ {
+   aff(has<,bes) 
+   {
+     send has;
+   }
+   nelse
+   {
+     bes = has + 2;
+   }
+ 
+   check(a)
+   {
+     casee 'A':
+       show>>input;
+       putin<<abcd;
+       default: finish;
+    } 
+ }
+}
