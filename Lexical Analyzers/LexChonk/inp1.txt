@@ -1,0 +1,13 @@
+$ nomain(()){{
+	^Code to check if user specified number is odd or even
+	@ result == "odd";;
+	$ num == 0;; ^User needs to enter the number here 
+	$ modval == num%2;;
+	iff--((modval===0)){{
+		result=="even_number here";;
+	}}
+        eelse--{{
+		result=="odd_number here";;
+	}}
+	returnn 0;;
+}}

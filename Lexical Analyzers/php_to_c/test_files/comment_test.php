@@ -1,0 +1,9 @@
+<?php
+$a=2;
+//test
+$a=2/2;
+if($a)
+{
+    echo"hello";
+}
+?>

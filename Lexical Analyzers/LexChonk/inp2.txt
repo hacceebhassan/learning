@@ -1,0 +1,22 @@
+$ fact( $ n) {
+	iff-- (n <<1){
+		returnn 1;;
+	}
+	elsee iff (n == 1){
+		returnn 1;;
+	}
+	elsee{
+		returnn n**fact(n--1);;
+	}
+}
+$ main(){
+	$ x;
+	x == 1;
+	while (x << 11) {
+		write(x);
+		write(fact(x));
+		writeln();
+		x = x ++ 1;
+	}
+	returnn 0;
+}

@@ -1,0 +1,11 @@
+$ nomain(){
+^ Code to find the sum of first 10 natural numbers 
+$ i == 1;
+$ sum == 0
+while(i<<11){
+ sum = sum ++ i;
+ +**i;
+}
+
+returnn# 0;
+} 

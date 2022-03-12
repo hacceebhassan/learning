@@ -1,0 +1,340 @@
+start : top_statement_list
+top_statement_list : top_statement_list top_statement
+                          | empty
+
+top_statement : statement
+                     | function_declaration_statement
+                     | HALT_COMPILER LPAREN RPAREN SEMI_COLON
+
+top_statement : CONST constant_declarations SEMI_COLON
+
+
+constant_declarations : constant_declarations COMMA constant_declaration
+                             | constant_declaration
+constant_declaration : IDENTIFIER EQUALS static_expr
+inner_statement_list : inner_statement_list inner_statement
+                            | empty
+inner_statement : statement
+                       | function_declaration_statement
+                       
+                       | HALT_COMPILER LPAREN RPAREN SEMI_COLON
+inner_statement : YIELD SEMI_COLON
+                       | YIELD expr SEMI_COLON
+statement : LBRACE inner_statement_list RBRACE
+statement : IF LPAREN expr RPAREN statement elseif_list else_single
+                 | IF LPAREN expr RPAREN COLON inner_statement_list new_elseif_list new_else_single ENDIF SEMI_COLON
+statement : WHILE LPAREN expr RPAREN while_statement
+statement : DO statement WHILE LPAREN expr RPAREN SEMI_COLON
+statement : FOR LPAREN for_expr SEMI_COLON for_expr SEMI_COLON for_expr RPAREN for_statement
+statement : FOREACH LPAREN expr AS foreach_variable foreach_optional_arg RPAREN foreach_statement
+statement : SWITCH LPAREN expr RPAREN switch_case_list
+statement : BREAK SEMI_COLON
+                 | BREAK expr SEMI_COLON
+statement : CONTINUE SEMI_COLON
+                 | CONTINUE expr SEMI_COLON
+statement : RETURN SEMI_COLON
+                 | RETURN expr SEMI_COLON
+statement : GLOBAL global_var_list SEMI_COLON
+statement : STATIC static_var_list SEMI_COLON
+statement : ECHO echo_expr_list SEMI_COLON
+statement : INLINE_HTML
+statement : expr SEMI_COLON
+statement : UNSET LPAREN unset_variables RPAREN SEMI_COLON
+statement : SEMI_COLON
+{% comment %} statement : TRY LBRACE inner_statement_list RBRACE additional_catches maybe_finally
+fully_qualified_class_name : namespace_name
+additional_catches : additional_catches CATCH LPAREN fully_qualified_class_name VARIABLE RPAREN LBRACE inner_statement_list RBRACE
+                          | empty
+maybe_finally : FINALLY LBRACE inner_statement_list RBRACE
+                     | empty
+statement : THROW expr SEMI_COLON {% endcomment %}
+{% comment %} statement : DECLARE LPAREN declare_list RPAREN declare_statement   # doubt
+declare_list : IDENTIFIER EQUALS static_scalar
+                    | declare_list COMMA IDENTIFIER EQUALS static_scalar # doubt
+declare_statement : statement
+                         | COLON inner_statement_list ENDDECLARE SEMI_COLON # doubt {% endcomment %}
+elseif_list : empty
+                   | elseif_list ELSEIF LPAREN expr RPAREN statement
+else_single : empty
+                   | ELSE statement
+new_elseif_list : empty
+                       | new_elseif_list ELSEIF LPAREN expr RPAREN COLON inner_statement_list
+new_else_single : empty
+                       | ELSE COLON inner_statement_list
+while_statement : statement
+                       | COLON inner_statement_list ENDWHILE SEMI_COLON
+for_expr : empty
+                | non_empty_for_expr
+non_empty_for_expr : non_empty_for_expr COMMA expr
+                          | expr
+for_statement : statement
+                     | COLON inner_statement_list ENDFOR SEMI_COLON
+{% comment %} foreach_variable : LIST LPAREN assignment_list RPAREN
+                        | variable
+                        | AND variable 
+foreach_optional_arg : empty
+                            | DOUBLE_ARROW foreach_variable
+foreach_statement : statement
+                         | COLON inner_statement_list ENDFOREACH SEMI_COLON {% endcomment %}
+switch_case_list : LBRACE case_list RBRACE
+                        | LBRACE SEMI_COLON case_list RBRACE
+switch_case_list : COLON case_list ENDSWITCH SEMI_COLON
+                        | COLON SEMI_COLON case_list ENDSWITCH SEMI_COLON
+case_list : empty
+                 | case_list_no_default CASE expr case_separator inner_statement_list
+                 | case_list_no_default DEFAULT case_separator inner_statement_list
+
+case_list_no_default : empty
+                            | case_list_no_default CASE expr case_separator inner_statement_list
+case_separator : COLON
+                      | SEMI_COLON
+global_var_list : global_var_list COMMA global_var
+                       | global_var
+global_var : VARIABLE
+                  | DOLLAR variable
+                  | DOLLAR LBRACE expr RBRACE
+static_var_list : static_var_list COMMA static_var
+                       | static_var
+static_var : VARIABLE EQUALS static_scalar
+                  | VARIABLE
+echo_expr_list : echo_expr_list COMMA expr
+                      | expr
+unset_variables : unset_variables COMMA unset_variable
+                       | unset_variable
+unset_variable : variable
+function_declaration_statement : FUNCTION is_reference IDENTIFIER LPAREN parameter_list RPAREN LBRACE inner_statement_list RBRACE
+is_reference : AND
+                    | empty
+parameter_list : parameter_list COMMA parameter  #doubt
+                      | parameter
+{% comment %} TODO: check this grammar rules {% endcomment %}
+parameter_list : empty   #doubt
+{% comment %} TODO: check this grammar rules {% endcomment %}
+parameter : VARIABLE
+                 | AND VARIABLE
+                 | VARIABLE EQUALS static_scalar
+                 | AND VARIABLE EQUALS static_scalar
+
+expr : variable
+expr : variable EQUALS expr
+            | variable EQUALS AND expr
+{% comment %} ctor_arguments : LPAREN function_call_parameter_list RPAREN
+                      | empty {% endcomment %}
+
+expr : CLONE expr
+expr : LIST LPAREN assignment_list RPAREN EQUALS expr
+assignment_list : assignment_list COMMA assignment_list_element
+                       | assignment_list_element
+assignment_list_element : variable
+                               | empty
+                               | LIST LPAREN assignment_list RPAREN
+variable :  base_variable_with_function_calls
+base_variable_with_function_calls : base_variable
+                                         | function_call
+function_call : namespace_name LPAREN function_call_parameter_list RPAREN
+                     
+
+function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN
+{% comment %} function_call : BACKTICK encaps_list BACKTICK {% endcomment %}
+
+{% comment %} method_or_not : LPAREN function_call_parameter_list RPAREN
+                     | empty {% endcomment %}
+{% comment %} variable_properties : variable_properties variable_property
+                           | empty {% endcomment %}
+base_variable : simple_indirect_reference
+
+simple_indirect_reference : DOLLAR simple_indirect_reference
+                                 | reference_variable
+variable : variable LBRACKET dim_offset RBRACKET
+reference_variable : reference_variable LBRACKET dim_offset RBRACKET
+reference_variable : reference_variable LBRACE expr RBRACE
+reference_variable : compound_variable
+expr : expr LBRACE dim_offset RBRACE
+compound_variable : VARIABLE
+                         | DOLLAR LBRACE expr RBRACE
+dim_offset : expr
+                  | empty
+
+variable_without_objects : simple_indirect_reference
+expr : scalar
+expr : ARRAY LPAREN array_pair_list RPAREN
+            | LBRACKET array_pair_list RBRACKET
+array_pair_list : empty
+                       | non_empty_array_pair_list possible_comma
+non_empty_array_pair_list : non_empty_array_pair_list COMMA AND variable
+                                 | non_empty_array_pair_list COMMA expr
+                                 | AND variable
+                                 | expr
+non_empty_array_pair_list : non_empty_array_pair_list COMMA expr DOUBLE_ARROW AND variable
+                                 | non_empty_array_pair_list COMMA expr DOUBLE_ARROW expr
+                                 | expr DOUBLE_ARROW AND variable
+                                 | expr DOUBLE_ARROW expr
+possible_comma : empty
+                      | COMMA
+function_call_parameter_list : function_call_parameter_list COMMA function_call_parameter
+                                    | function_call_parameter
+function_call_parameter_list : empty
+function_call_parameter : expr
+                               | AND variable
+expr : FUNCTION is_reference LPAREN parameter_list RPAREN lexical_vars LBRACE inner_statement_list RBRACE
+lexical_vars : USE LPAREN lexical_var_list RPAREN
+                    | empty
+lexical_var_list : lexical_var_list COMMA AND VARIABLE
+                        | lexical_var_list COMMA VARIABLE
+                        | AND VARIABLE
+                        | VARIABLE
+expr : variable PLUS_EQUAL expr
+            | variable MINUS_EQUAL expr
+            | variable MUL_EQUAL expr
+            | variable DIV_EQUAL expr
+            | variable CONCAT_EQUAL expr
+            | variable MOD_EQUAL expr
+            | variable AND_EQUAL expr
+            | variable OR_EQUAL expr
+            | variable XOR_EQUAL expr
+            | variable SL_EQUAL expr
+            | variable SR_EQUAL expr
+expr : expr BOOLEAN_AND expr
+            | expr BOOLEAN_OR expr
+            | expr LOGICAL_AND expr
+            | expr LOGICAL_OR expr
+            | expr LOGICAL_XOR expr
+            | expr AND expr
+            | expr OR expr
+            | expr XOR expr
+            | expr CONCAT expr
+            | expr PLUS expr
+            | expr MINUS expr
+            | expr MUL expr
+            | expr DIV expr
+            | expr SL expr
+            | expr SR expr
+            | expr MOD expr
+            | expr IS_IDENTICAL expr
+            | expr IS_NOT_IDENTICAL expr
+            | expr IS_EQUAL_TO expr
+            | expr IS_NOT_EQUAL expr
+            | expr LESS_THAN expr
+            | expr LESS_THAN_OR_EQUAL expr
+            | expr GREATER_THAN expr
+            | expr GRATER_THAN_OR_EQUAL expr
+            | expr INSTANCEOF expr
+            | expr INSTANCEOF STATIC
+expr : PLUS expr
+            | MINUS expr
+            | NOT expr
+            | BOOLEAN_NOT expr
+expr : expr QUESTION expr COLON expr
+expr : expr QUESTION COLON expr
+expr : INC variable
+            | DEC variable
+expr : variable INC
+            | variable DEC
+expr : INT_CAST expr
+isset_variables : isset_variables COMMA variable
+                       | variable
+expr : EMPTY LPAREN expr RPAREN
+expr : EVAL LPAREN expr RPAREN
+expr : INCLUDE expr
+expr : INCLUDE_ONCE expr
+expr : REQUIRE expr
+expr : REQUIRE_ONCE expr
+exit_or_die : EXIT
+                   | DIE
+expr : exit_or_die
+            | exit_or_die LPAREN RPAREN
+            | exit_or_die LPAREN expr RPAREN
+expr : PRINT expr
+expr : AT expr
+expr : LPAREN expr RPAREN
+nowdoc : START_NOWDOC nowdoc_text_content END_NOWDOC'
+scalar :  common_scalar
+              | DOUBLE_QUOTE encaps_list DOUBLE_QUOTE
+              | IDENTIFIER DOUBLE_QUOTE encaps_list DOUBLE_QUOTE
+              | scalar_heredoc
+              | nowdoc
+nowdoc_text_content : nowdoc_text_content ENCAPSED_AND_WHITESPACE
+                           | empty
+scalar : namespace_name
+              
+common_scalar : INT_NUMBER| FLOAT_NUMBER
+common_scalar : CONSTANT_ENCAPSED_STRING
+                     | IDENTIFIER CONSTANT_ENCAPSED_STRING
+static_scalar : common_scalar
+                     | DOUBLE_QUOTE DOUBLE_QUOTE
+                     | DOUBLE_QUOTE ENCAPSED_AND_WHITESPACE DOUBLE_QUOTE
+                     | static_heredoc
+                     | nowdoc
+static_heredoc : START_HEREDOC multiple_encapsed END_HEREDOC
+scalar_heredoc : START_HEREDOC encaps_list END_HEREDOC
+
+multiple_encapsed : multiple_encapsed ENCAPSED_AND_WHITESPACE
+                         | empty
+static_scalar : namespace_name
+                     
+static_scalar : PLUS static_scalar
+                     | MINUS static_scalar
+static_scalar : ARRAY LPAREN static_array_pair_list RPAREN
+                     | LBRACKET static_array_pair_list RBRACKET
+static_array_pair_list : empty
+                              | static_non_empty_array_pair_list possible_comma
+static_non_empty_array_pair_list : static_non_empty_array_pair_list COMMA static_expr
+                                        | static_expr
+static_non_empty_array_pair_list : static_non_empty_array_pair_list COMMA static_scalar DOUBLE_ARROW static_expr
+                                        | static_scalar DOUBLE_ARROW static_expr
+static_expr : static_scalar
+                   | static_expr BOOLEAN_AND static_expr
+                   | static_expr BOOLEAN_OR static_expr
+                   | static_expr LOGICAL_AND static_expr
+                   | static_expr LOGICAL_OR static_expr
+                   | static_expr LOGICAL_XOR static_expr
+                   | static_expr AND static_expr
+                   | static_expr OR static_expr
+                   | static_expr XOR static_expr
+                   | static_expr CONCAT static_expr
+                   | static_expr PLUS static_expr
+                   | static_expr MINUS static_expr
+                   | static_expr MUL static_expr
+                   | static_expr DIV static_expr
+                   | static_expr SL static_expr
+                   | static_expr SR static_expr
+                   | static_expr MOD static_expr
+                   | static_expr IS_IDENTICAL static_expr
+                   | static_expr IS_NOT_IDENTICAL static_expr
+                   | static_expr IS_EQUAL_TO static_expr
+                   | static_expr IS_NOT_EQUAL static_expr
+                   | static_expr LESS_THAN static_expr
+                   | static_expr LESS_THAN_OR_EQUAL static_expr
+                   | static_expr GREATER_THAN static_expr
+                   | static_expr GRATER_THAN_OR_EQUAL static_expr
+static_expr : LPAREN static_expr RPAREN
+namespace_name : IDENTIFIER
+                      | ARRAY
+encaps_list : encaps_list encaps_var
+                   | empty
+encaps_var : VARIABLE
+encaps_var : VARIABLE LBRACKET encaps_var_offset RBRACKET
+encaps_var : DOLLAR_OPEN_CURLY_BRACES expr RBRACE
+encaps_var : DOLLAR_OPEN_CURLY_BRACES STRING_VARNAME LBRACKET expr RBRACKET RBRACE
+encaps_var : CURLY_OPEN variable RBRACE
+encaps_var_offset : IDENTIFIER
+encaps_var_offset : NUM_STRING
+encaps_var_offset : VARIABLE
+empty : 
+
+
+{% comment %} missed rules {% endcomment %}
+
+'expr : ARRAY_CAST expr'
+{% comment %} 'expr : OBJECT_CAST expr' {% endcomment %}
+'expr : BOOL_CAST expr'
+'expr : UNSET_CAST expr'
+'expr : BINARY_CAST expr'
+'expr : ISSET LPAREN isset_variables RPAREN'
+'common_scalar : FUNC_C'
+'common_scalar : METHOD_C'
+'common_scalar : LINE'
+'common_scalar : FILE'
+'common_scalar : DIR'
+'expr : STRING_CAST expr'
+'expr : DOUBLE_CAST expr'
