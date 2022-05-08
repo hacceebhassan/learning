@@ -1,0 +1,39 @@
+<Integer type declarator, $>  on line number 1
+<Identifier, nomain> on line number 1
+<Parentheses begin, (>  on line number 1
+<Parentheses end, )>  on line number 1
+<Braces begin, {>  on line number 1
+<Integer type declarator, $>  on line number 3
+<Identifier, i> on line number 3
+<Relational operator - equality, ==>  on line number 3
+<int_literal, 1> on line number 3
+<End_of_statement representor, ;>  on line number 3
+<Integer type declarator, $>  on line number 4
+<Identifier, sum> on line number 4
+<Relational operator - equality, ==>  on line number 4
+<int_literal, 0> on line number 4
+<Loop construct - while, while>  on line number 5
+<Parentheses begin, (>  on line number 5
+<Identifier, i> on line number 5
+<Relational operator - less than, <>  on line number 5
+<Relational operator - less than, <>  on line number 5
+<int_literal, 11> on line number 5
+<Parentheses end, )>  on line number 5
+<Braces begin, {>  on line number 5
+<Identifier, sum> on line number 6
+<Assignment operator, =>  on line number 6
+<Identifier, sum> on line number 6
+<Increment operator, ++>  on line number 6
+<Identifier, i> on line number 6
+<End_of_statement representor, ;>  on line number 6
+<Arithmetic operator - addition, +>  on line number 7
+<Arithmetic operator - multiplication, *>  on line number 7
+<Arithmetic operator - multiplication, *>  on line number 7
+<Identifier, i> on line number 7
+<End_of_statement representor, ;>  on line number 7
+<Braces end, }>  on line number 8
+<Identifier, returnn> on line number 10
+<Character type declarator, #>  on line number 10
+<int_literal, 0> on line number 10
+<End_of_statement representor, ;>  on line number 10
+<Braces end, }>  on line number 11
