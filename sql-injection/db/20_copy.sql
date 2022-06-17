@@ -1,0 +1,1 @@
+COPY sqlinjection FROM '/docker-entrypoint-initdb.d/datasource.csv' DELIMITER ',' CSV HEADER;

@@ -1,0 +1,28 @@
+version: "3"
+services:
+  postgresql:
+    build:
+      context: .
+      dockerfile: Dockerfile_postgres
+    environment:
+      POSTGRES_DB: sqlinjection
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moxoff}
+    ports:
+      - ${POSTGRES_PORT:-8431}:5432
+    volumes:
+      - ${DEPLOY_VOLUMES_DIR:-/scratch/trotta/it/sql-injection-volumes}:/var/lib/postgresql/data
+    #user: 1002:1002
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile_api
+    environment:
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PSW=moxoff
+      - DB_NAME=sqlinjection
+    ports:
+      - ${SERVER_PORT:-8001}:8001

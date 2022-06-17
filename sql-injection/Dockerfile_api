@@ -1,0 +1,16 @@
+FROM python:3.8-slim-buster
+
+WORKDIR /server
+
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+COPY resources ./resources
+COPY config.py .
+COPY server.py .
+
+ENV PYTHONPATH /server
+
+EXPOSE 8000
+
+CMD python3 server.py
